@@ -1,0 +1,7 @@
+monday 7
+tuesday 8
+wednesday 2
+thursday 4
+friday 9
+saturday 12
+sunday 3
