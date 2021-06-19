@@ -9,7 +9,7 @@ file=open('gender_dataset.txt')
 gender=[]
 height=[]
 weight=[]
-
+print("▆▆▆▆▆▆▆▆▆▆▆▆▆▆▆▆▆▆▆▆▆▆▆▆▆▆▆▆▆▆▆▆▆▆▆▆▆▆▆\nCROSS VALIDATION\n▆▆▆▆▆▆▆▆▆▆▆▆▆▆▆▆▆▆▆▆▆▆▆▆▆▆▆▆▆▆▆▆▆▆▆▆▆▆▆")
 for line in file.readlines():
     line = line.replace('\n', '')
     g,h,w = line.split('\t')
@@ -57,7 +57,9 @@ for i in range(len(gender)):
 # print(len(new_X[0]))
 
 total_percentage=0
-models = input("모델의 종류를 입력해주세요(linear,poly,lda,knn):")
+models = input("모델의 종류를 입력해주세요(linear,poly,rbf,sigmoid,precomputed,lda,knn): ")
+if models=="knn":
+    neigh = int(input("n_neighbors 값을 입력하세요: "))
 for test_group in range(k_fold):
     # if(test_group!=0):continue
     train_X=[]
@@ -78,22 +80,28 @@ for test_group in range(k_fold):
         clf = svm.SVC(kernel="linear") #svm_linear
     elif models=="poly":
         clf = svm.SVC(kernel="poly") #svm_poly
+    elif models=="rbf":
+        clf = svm.SVC(kernel="rbf") #svm_poly
+    elif models=="sigmoid":
+        clf = svm.SVC(kernel="sigmoid") #svm_poly
+    elif models=="precomputed":
+        clf = svm.SVC(kernel="precomputed") #svm_poly
     elif models=="lda":
         clf = LinearDiscriminantAnalysis(n_components=1) #lda
     elif models=="knn":
         #knn start
-        n_neighbors = 15
+        n_neighbors = neigh
         for weights in ['uniform', 'distance']:
             # we create an instance of Neighbours Classifier and fit the data.
             clf = neighbors.KNeighborsClassifier(n_neighbors, weights=weights)
             clf.fit(X, y)
-        clf.fit(train_X,train_y)
         #knn end
     else:
         models = input("오류 발생. 다시 시도해주세요.")
         break
-    model_answer=clf.predict(test_X)
 
+    clf.fit(train_X, train_y)
+    model_answer=clf.predict(test_X)
     total_count=0
     correct_count=0
     for i in range(len(model_answer)):
@@ -106,6 +114,7 @@ for test_group in range(k_fold):
     print("정확도: "+str(percentage)+"% ("+str(correct_count)+"/"+str(total_count)+")\n")
 total_percentage/=k_fold
 print("----------------------------------------")
+print("모델 종류: "+str(models.upper()))
 print("cross validation 전체 정확도: "+str(total_percentage)+"%")
 print("----------------------------------------\n<키와 몸무게로 성별 예측>")
 # ax = plt.gca()
